@@ -55,13 +55,14 @@ void drawHomeScreen() {
   display.display();
 }
 
-#define MENU_ITEMS 5
+#define MENU_ITEMS 6
 const char* menuItems[MENU_ITEMS] = {
   "Back to Home",
   "Store to NFC",
   "Import from NFC",
   "Modify NFC",
-  "Reset"
+  "Reset",
+  "" //need to add a dummy item to prvent visual bug
 };
 
 
