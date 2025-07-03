@@ -1,63 +1,57 @@
-#ifndef encoder_H
-#define encoder_H
-
+#include "encoder.h"
 #include <Arduino.h>
 
-// Define encoder pins
-const int clkPin = 32;
-const int dtPin  = 35;
-const int swPin  = 25;
+// KY-040 Pins
+#define ENCODER_CLK 32
+#define ENCODER_DT 35
+#define ENCODER_SW 25  // Change to your button pin
 
-static int lastClk = HIGH;
-static int encoderDelta = 0;
+// Internal state
+volatile int lastClkState = 0;
+volatile int encoderDelta = 0;
+volatile bool buttonPressed = false;
 
-static unsigned long lastDebounce = 0;
-static const int debounceDelay = 50;
-static bool lastButtonState = HIGH;
-static bool buttonPressed = false;
+void IRAM_ATTR handleEncoder() {
+  int clkState = digitalRead(ENCODER_CLK);
+  int dtState = digitalRead(ENCODER_DT);
 
-void initEncoder() {
-  pinMode(clkPin, INPUT);
-  pinMode(dtPin, INPUT);
-  pinMode(swPin, INPUT_PULLUP);
-  lastClk = digitalRead(clkPin);
-}
-
-void updateEncoder() {
-  // Rotation
-  int clkState = digitalRead(clkPin);
-  if (clkState != lastClk && clkState == LOW) {
-    if (digitalRead(dtPin) != clkState) encoderDelta++;
-    else encoderDelta--;
-  }
-  lastClk = clkState;
-
-  // Button debounce
-  bool currentButtonState = digitalRead(swPin);
-  if (currentButtonState != lastButtonState) {
-    lastDebounce = millis();
-  }
-
-  if ((millis() - lastDebounce) > debounceDelay) {
-    if (lastButtonState == HIGH && currentButtonState == LOW) {
-      buttonPressed = true;
+  if (clkState != lastClkState) {
+    if (dtState != clkState) {
+      encoderDelta++;
+    } else {
+      encoderDelta--;
     }
   }
-
-  lastButtonState = currentButtonState;
+  lastClkState = clkState;
 }
 
-int getEncoderDelta() {
-  int delta = encoderDelta;
+void IRAM_ATTR handleButton() {
+  buttonPressed = true;
+}
+
+void initEncoder() {
+  pinMode(ENCODER_CLK, INPUT_PULLUP);
+  pinMode(ENCODER_DT, INPUT_PULLUP);
+  pinMode(ENCODER_SW, INPUT_PULLUP);
+
+  lastClkState = digitalRead(ENCODER_CLK);
+
+  attachInterrupt(digitalPinToInterrupt(ENCODER_CLK), handleEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_SW), handleButton, FALLING);
+}
+
+long getEncoderDelta() {
+  noInterrupts();
+  long delta = encoderDelta;
   encoderDelta = 0;
+  interrupts();
   return delta;
 }
 
-bool wasButtonPressed() {
-  if (buttonPressed) {
-    buttonPressed = false;
-    return true;
-  }
-  return false;
+bool isButtonPressed() {
+  noInterrupts();
+  bool pressed = buttonPressed;
+  buttonPressed = false;
+  interrupts();
+  return pressed;
 }
-#endif
