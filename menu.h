@@ -1,10 +1,16 @@
 #ifndef MENU_H
 #define MENU_H
 
-enum ScreenState { HOME, MENU };
+// Define all screen states
+enum MenuState {
+  HOME,
+  MAIN_MENU,
+  MODIFY_NFC_MENU
+};
 
+// Function declarations
 void updateMenu();
-ScreenState getCurrentScreen();
+MenuState getCurrentScreen();
 int getMenuIndex();
 
 #endif
