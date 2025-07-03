@@ -1,31 +1,38 @@
-#include <Arduino.h>
-#include "display.h"  // Directly include if you're not using headers
+#include "menu.h"
+#include "encoder.h"
 
-enum Page { HOME, MENU_1 };
-Page currentPage = HOME;
+const int MENU_ITEMS = 5;
 
-int selectedOption = 0;
-const int totalOptions = 2;
+enum ScreenState currentScreen = HOME;
+int menuIndex = 0;
 
-void handleMenuInput(int delta) {
-  if (currentPage == MENU_1) {
-    selectedOption += delta;
-    if (selectedOption < 0) selectedOption = totalOptions - 1;
-    if (selectedOption >= totalOptions) selectedOption = 0;
-    drawMenu1(selectedOption);
+void updateMenu() {
+  long delta = getEncoderDelta();
+
+  if (currentScreen == HOME) {
+    if (isButtonPressed()) {
+      currentScreen = MENU;
+    }
+  } else if (currentScreen == MENU) {
+    if (delta != 0) {
+      menuIndex += delta;
+      if (menuIndex < 0) menuIndex = 0;
+      if (menuIndex >= MENU_ITEMS) menuIndex = MENU_ITEMS - 1;
+    }
+
+    if (isButtonPressed()) {
+      if (menuIndex == 0) {  // Back to Home
+        currentScreen = HOME;
+      }
+      // Other menu items don't do anything yet
+    }
   }
 }
 
-void handleButtonPress() {
-  if (currentPage == HOME) {
-    currentPage = MENU_1;
-    drawMenu1(selectedOption);
-  } else {
-    currentPage = HOME;
-    drawHomeScreen();
-  }
+ScreenState getCurrentScreen() {
+  return currentScreen;
 }
 
-Page getCurrentPage() {
-  return currentPage;
+int getMenuIndex() {
+  return menuIndex;
 }

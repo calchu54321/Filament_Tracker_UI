@@ -1,14 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
-enum Page { HOME, MENU_1 };
+enum ScreenState { HOME, MENU };
 
-extern Page currentPage;
-extern int selectedOption;
-extern const int totalOptions;
+void updateMenu();
+ScreenState getCurrentScreen();
+int getMenuIndex();
 
-void handleMenuInput(int delta);
-void handleButtonPress();
-Page getCurrentPage();
-
-#endif // MENU_H
+#endif

@@ -40,12 +40,12 @@ void drawHomeScreen() {
 
   display.setCursor(0, 16);
   display.print("Left: ");
-  display.print(filamentLeft());
+  display.print(filamentLeft()); //filamentLeft from rotary_encoder.h
   display.println(" g");
 
   display.setCursor(0, 32);
   display.print("Used: ");
-  display.print(filamentUsed());
+  display.print(filamentUsed()); //filamentUsed from rotary_encoder.h
   display.println(" g");
 
   display.setCursor(0, 48);
@@ -55,19 +55,39 @@ void drawHomeScreen() {
   display.display();
 }
 
-void drawMenu1(int selected) {
+#define MENU_ITEMS 5
+const char* menuItems[MENU_ITEMS] = {
+  "Back to Home",
+  "Store to NFC",
+  "Import from NFC",
+  "Modify NFC",
+  "Reset"
+};
+
+
+void drawMenuScreen(int selected) {
   display.clearDisplay();
-
   display.setCursor(0, 0);
-  display.println("Main Menu");
+  display.println("Menu");
 
-  display.setCursor(0, 16);
-  display.print(selected == 0 ? "> " : "  ");
-  display.println("NFC Options");
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > MENU_ITEMS - 3) startItem = MENU_ITEMS - 3;
 
-  display.setCursor(0, 32);
-  display.print(selected == 1 ? "> " : "  ");
-  display.println("Settings");
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= MENU_ITEMS) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(menuItems[itemIndex]);
+  }
 
   display.display();
 }

@@ -8,6 +8,6 @@ extern Adafruit_SSD1306 display; // Declare, define in display.cpp
 
 void initDisplay();
 void drawHomeScreen();
-void drawMenu1(int selected);
+void drawMenuScreen(int selected);
 
 #endif // DISPLAY_H
