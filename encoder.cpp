@@ -11,6 +11,10 @@ volatile int lastClkState = 0;
 volatile int encoderDelta = 0;
 volatile bool buttonPressed = false;
 
+// Debounce state
+volatile unsigned long lastButtonPressTime = 0;
+const unsigned long debounceDelay = 200;  // Debounce delay in ms
+
 void IRAM_ATTR handleEncoder() {
   int clkState = digitalRead(ENCODER_CLK);
   int dtState = digitalRead(ENCODER_DT);
@@ -26,7 +30,11 @@ void IRAM_ATTR handleEncoder() {
 }
 
 void IRAM_ATTR handleButton() {
-  buttonPressed = true;
+  unsigned long currentTime = millis();
+  if (currentTime - lastButtonPressTime > debounceDelay) {
+    buttonPressed = true;
+    lastButtonPressTime = currentTime;
+  }
 }
 
 void initEncoder() {
