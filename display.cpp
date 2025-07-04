@@ -18,9 +18,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Global menu state (defined here)
 extern MenuState currentScreen;
 
-// These variables should be updated elsewhere (e.g., rotary_encoder.cpp)
-String tagName = "PLA_White_1kg";
-//extern String tagName; *********************LATER MAKE THIS A VARIABLE
 
 void initDisplay() {
   Wire.begin(21, 22); // Explicitly initialize I2C with SDA=21, SCL=22
@@ -102,6 +99,14 @@ void drawMenuScreen(int selected) {
   else if (currentScreen == MODIFY_NFC_MENU) {
     Modify_NFC(selected);
   }
+  //Modify_Tag_Menu
+  else if (currentScreen == MODIFY_TAG_MENU) {
+    Modify_Tag(selected);
+  }
+  //Modify_Tag_Menu
+  else if (currentScreen == MATERIAL_TYPE_MENU) {
+    Modify_Material_Type(selected);
+  }
 }
 
 
@@ -141,3 +146,78 @@ void Modify_NFC(int selected) {
   display.display();
 }
 
+//Modify_Tag Submenu
+void Modify_Tag(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Modify Tag");
+
+  const int ModifyTagItemsCount = 5;
+  const char* ModifyTagItems[ModifyTagItemsCount] = {
+    "Back",
+    "Material Type",
+    "Color",
+    "Spool Weight",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ModifyTagItemsCount - 3) startItem = ModifyTagItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ModifyTagItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ModifyTagItems[itemIndex]);
+  }
+
+  display.display();
+}
+
+//Modify_Material_type Submenu
+void Modify_Material_Type(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Material Type");
+
+  const int ModifyMaterialTypeItemsCount = 7;
+  const char* ModifyMaterialTypeItems[ModifyMaterialTypeItemsCount] = {
+    "Back",
+    "PLA",
+    "ABS",
+    "PETG",
+    "TPU",
+    "Nylon",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ModifyMaterialTypeItemsCount - 3) startItem = ModifyMaterialTypeItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ModifyMaterialTypeItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ModifyMaterialTypeItems[itemIndex]);
+  }
+
+  display.display();
+}
