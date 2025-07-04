@@ -13,7 +13,7 @@ const int MODIFY_SPOOL_WEIGHT_ITEMS = 5;
 enum MenuState currentScreen = HOME;
 int menuIndex = 0;
 
-//TAG NAME
+//DEFAULT Initialize TagName
 String materialType = "PLA"; //remove below 3 later
 String color = "White";
 String spoolWeight = "1kg";
