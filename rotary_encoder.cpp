@@ -1,4 +1,5 @@
 #include "rotary_encoder.h"
+#include "menu.h" //update Spool Weight
 #include <Arduino.h>
 
 // Pin definitions
@@ -14,7 +15,7 @@ const float gramsPerMM = 1000.0 / 33000.0;  // 1kg = 33m → 33000mm
 
 // Filament state
 static float filamentUsedValue = 0.0;
-static float filamentLeftValue = 1000.0;
+static float filamentLeftValue = spoolWeightValue;
 
 void IRAM_ATTR updateRotaryEncoder() {
   int MSB = digitalRead(ENCODER_A);
@@ -50,7 +51,7 @@ void updateFilamentUsage() {
 
   float mmUsed = pulses / pulsesPerMM;
   filamentUsedValue = mmUsed * gramsPerMM;
-  filamentLeftValue = 1000.0 - filamentUsedValue;
+  filamentLeftValue = spoolWeightValue - filamentUsedValue;
 }
 
 float filamentUsed() {

@@ -13,5 +13,7 @@ void drawMenuScreen(int selected);
 void Modify_NFC(int selected);
 void Modify_Tag(int selected);
 void Modify_Material_Type(int selected);
+void Modify_Color(int selected);
+void Modify_Spool_Weight(int selected);
 
 #endif

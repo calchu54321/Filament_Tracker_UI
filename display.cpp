@@ -107,6 +107,12 @@ void drawMenuScreen(int selected) {
   else if (currentScreen == MATERIAL_TYPE_MENU) {
     Modify_Material_Type(selected);
   }
+  else if (currentScreen == COLOR_MENU){
+    Modify_Color(selected);
+  }
+  else if (currentScreen == SPOOL_WEIGHT_MENU){
+    Modify_Spool_Weight(selected);
+  }
 }
 
 
@@ -217,6 +223,81 @@ void Modify_Material_Type(int selected) {
 
     display.setCursor(0, 16 * (i + 1));
     display.println(ModifyMaterialTypeItems[itemIndex]);
+  }
+
+  display.display();
+}
+
+void Modify_Color(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Color");
+
+  const int ModifyColorItemsCount = 7;
+  const char* ModifyColorItems[ModifyColorItemsCount] = {
+    "Back",
+    "Black",
+    "White",
+    "Red",
+    "Blue",
+    "Green",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ModifyColorItemsCount - 3) startItem = ModifyColorItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ModifyColorItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ModifyColorItems[itemIndex]);
+  }
+
+  display.display();
+}
+
+void Modify_Spool_Weight(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Color");
+
+  const int ModifySpoolWeightItemsCount = 6;
+  const char* ModifySpoolWeightItems[ModifySpoolWeightItemsCount] = {
+    "Back",
+    "250 g",
+    "500 g",
+    "1 kg",
+    "2 kg",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ModifySpoolWeightItemsCount - 3) startItem = ModifySpoolWeightItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ModifySpoolWeightItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ModifySpoolWeightItems[itemIndex]);
   }
 
   display.display();

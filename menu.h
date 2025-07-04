@@ -8,7 +8,9 @@ enum MenuState {
   MAIN_MENU,
   MODIFY_NFC_MENU,
   MODIFY_TAG_MENU,
-  MATERIAL_TYPE_MENU
+  MATERIAL_TYPE_MENU,
+  COLOR_MENU,
+  SPOOL_WEIGHT_MENU
 };
 
 // Function declarations
@@ -18,5 +20,6 @@ int getMenuIndex();
 void updateTagName();
 
 extern String tagName;
+extern float spoolWeightValue;
 
 #endif
