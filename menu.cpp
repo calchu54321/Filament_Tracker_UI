@@ -129,6 +129,9 @@ void ModifyUsageValues(){
 
     if (isButtonPressed()) {
       adjusting = false;
+      display.setCursor(0, 48);
+      display.print("Saved ");
+      display.display();
       delay(1500);
     }
   }
