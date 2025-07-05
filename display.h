@@ -11,9 +11,11 @@ void drawHomeScreen();
 void drawMenuScreen(int selected);
 //Need to declare all new menu items
 void Modify_NFC(int selected);
+void Modify_Usage(int selected);
 void Modify_Tag(int selected);
 void Modify_Material_Type(int selected);
 void Modify_Color(int selected);
 void Modify_Spool_Weight(int selected);
+void Modify_Gram_Usage(int selected);
 
 #endif

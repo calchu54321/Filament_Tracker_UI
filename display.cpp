@@ -41,12 +41,12 @@ void drawHomeScreen() {
 
   display.setCursor(0, 16);
   display.print("Left: ");
-  display.print(filamentLeft()); //filamentLeft from rotary_encoder.h
+  display.print(getFilamentLeft()); //filamentLeft from rotary_encoder.h
   display.println(" g");
 
   display.setCursor(0, 32);
   display.print("Used: ");
-  display.print(filamentUsed()); //filamentUsed from rotary_encoder.h
+  display.print(getFilamentUsed()); //filamentUsed from rotary_encoder.h
   display.println(" g");
 
   display.setCursor(0, 48);
@@ -103,15 +103,25 @@ void drawMenuScreen(int selected) {
   else if (currentScreen == MODIFY_TAG_MENU) {
     Modify_Tag(selected);
   }
-  //Modify_Tag_Menu
+  //Material_Type_Menu
   else if (currentScreen == MATERIAL_TYPE_MENU) {
     Modify_Material_Type(selected);
   }
+  //Color_menu
   else if (currentScreen == COLOR_MENU){
     Modify_Color(selected);
   }
   else if (currentScreen == SPOOL_WEIGHT_MENU){
     Modify_Spool_Weight(selected);
+  }
+  else if (currentScreen == MODIFY_USAGE_MENU){
+    Modify_Usage(selected);
+  }
+  else if (currentScreen == ADJUST_GRAMS_LEFT_MENU){
+    Modify_Gram_Usage(selected);
+  }
+  else if (currentScreen == ADJUST_GRAMS_USED_MENU) {
+    Modify_Gram_Usage(selected);
   }
 }
 
@@ -228,6 +238,7 @@ void Modify_Material_Type(int selected) {
   display.display();
 }
 
+//Modify_Color Submenu
 void Modify_Color(int selected) {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -266,6 +277,7 @@ void Modify_Color(int selected) {
   display.display();
 }
 
+//Modify_Spool_Weight Submenu
 void Modify_Spool_Weight(int selected) {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -301,4 +313,83 @@ void Modify_Spool_Weight(int selected) {
   }
 
   display.display();
+}
+
+//Modify_Usage Submenu
+void Modify_Usage(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Modify Usage");
+
+  const int ModifyUsageItemsCount = 6;
+  const char* ModifyUsageItems[ModifyUsageItemsCount] = {
+    "Back",
+    "Adjust Grams Left",
+    "Adjust Grams Used",
+    "Adjust Length Left",
+    "Adjust Length Used",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ModifyUsageItemsCount - 3) startItem = ModifyUsageItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ModifyUsageItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ModifyUsageItems[itemIndex]);
+  }
+
+  display.display();
+  
+}
+
+//Modify_Gram_Usage Submenu
+void Modify_Gram_Usage(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Select A Tolerance");
+
+  const int ModifyGramUsageItemsCount = 7;
+  const char* ModifyGramUsageItems[ModifyGramUsageItemsCount] = {
+    "Back",
+    "+/- 0.01 g",
+    "+/- 0.1 g",
+    "+/- 1 g",
+    "+/- 10 g",
+    "+/- 100 g",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ModifyGramUsageItemsCount - 3) startItem = ModifyGramUsageItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ModifyGramUsageItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ModifyGramUsageItems[itemIndex]);
+  }
+
+  display.display();
+  
 }

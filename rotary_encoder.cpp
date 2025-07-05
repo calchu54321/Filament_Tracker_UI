@@ -6,7 +6,7 @@
 #define ENCODER_A 18
 #define ENCODER_B 19
 
-volatile long encoderCount = 0;
+extern volatile long encoderCount = 0;
 volatile int lastEncoded = 0;
 
 // Constants
@@ -14,8 +14,11 @@ const float pulsesPerMM = 600.0 / 100.0;    // 600 P/R per 100mm
 const float gramsPerMM = 1000.0 / 33000.0;  // 1kg = 33m → 33000mm
 
 // Filament state
-static float filamentUsedValue = 0.0;
-static float filamentLeftValue = spoolWeightValue;
+float filamentUsedValue = 0; // filamentUsed from menu.cpp
+float filamentLeftValue = 0; // spoolWeightValue from menu.cpp
+float filamentLengthLeftValue = 0.0;
+float filamentLengthUsedValue = 0.0;
+float filamentConsumed = 0;
 
 void IRAM_ATTR updateRotaryEncoder() {
   int MSB = digitalRead(ENCODER_A);
@@ -50,16 +53,43 @@ void updateFilamentUsage() {
   interrupts();
 
   float mmUsed = pulses / pulsesPerMM;
-  filamentUsedValue = mmUsed * gramsPerMM;
-  filamentLeftValue = spoolWeightValue - filamentUsedValue;
+  filamentConsumed = mmUsed * gramsPerMM;
+  filamentLeftValue = spoolWeightValue - filamentConsumed + (filamentAdjustLeftTEMP - spoolWeightValue);
+  filamentUsedValue = filamentConsumed + (spoolWeightValue - filamentAdjustLeftTEMP);
 }
 
-float filamentUsed() {
+// Getters
+float getFilamentUsed() {
   return filamentUsedValue;
 }
 
-float filamentLeft() {
+float getFilamentLeft() {
   return filamentLeftValue;
+}
+
+float getLengthLeft() {
+  return filamentLengthLeftValue;
+}
+
+float getLengthUsed() {
+  return filamentLengthUsedValue;
+}
+
+// Setters
+void setFilamentUsed(float value){
+  filamentUsedValue = value;
+}
+
+void setFilamentLeft(float value){
+  filamentLeftValue = value;
+}
+
+void setLengthLeft(float value){
+  filamentLengthLeftValue = value;
+}
+
+void setLengthUsed(float value){
+  filamentLengthUsedValue = value;
 }
 
 long getPulseCount() {
