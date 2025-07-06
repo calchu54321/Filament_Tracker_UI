@@ -123,6 +123,9 @@ void drawMenuScreen(int selected) {
   else if (currentScreen == ADJUST_GRAMS_USED_MENU) {
     Modify_Gram_Usage(selected);
   }
+  else if (currentScreen == RESET_MENU) {
+    Reset_Menu(selected);
+  }
 }
 
 
@@ -388,6 +391,42 @@ void Modify_Gram_Usage(int selected) {
 
     display.setCursor(0, 16 * (i + 1));
     display.println(ModifyGramUsageItems[itemIndex]);
+  }
+
+  display.display();
+  
+}
+ 
+// Reset Submenu
+void Reset_Menu(int selected) {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Restore Defaults?");
+
+  const int ResetItemsCount = 3;
+  const char* ResetItems[ResetItemsCount] = {
+    "No",
+    "Yes",
+    "" //need to add a dummy item to prvent visual bug
+  };
+
+  int startItem = selected - 1;
+  if (startItem < 0) startItem = 0;
+  if (startItem > ResetItemsCount - 3) startItem = ResetItemsCount - 3;
+
+  for (int i = 0; i < 3; i++) {
+    int itemIndex = startItem + i;
+    if (itemIndex >= ResetItemsCount) break;
+
+    if (itemIndex == selected) {
+      display.fillRect(0, 16 * (i + 1) - 2, SCREEN_WIDTH, 14, SSD1306_WHITE);
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+
+    display.setCursor(0, 16 * (i + 1));
+    display.println(ResetItems[itemIndex]);
   }
 
   display.display();

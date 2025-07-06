@@ -19,5 +19,6 @@ void Modify_Material_Type(int selected);
 void Modify_Color(int selected);
 void Modify_Spool_Weight(int selected);
 void Modify_Gram_Usage(int selected);
+void Reset_Menu(int selected);
 
 #endif

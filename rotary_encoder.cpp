@@ -8,6 +8,7 @@
 
 extern volatile long encoderCount = 0;
 volatile int lastEncoded = 0;
+extern long pulses = 0;
 
 // Constants
 const float pulsesPerMM = 600.0 / 100.0;    // 600 P/R per 100mm
@@ -19,6 +20,7 @@ float filamentLeftValue = 0; // spoolWeightValue from menu.cpp
 float filamentLengthLeftValue = 0.0;
 float filamentLengthUsedValue = 0.0;
 float filamentConsumed = 0;
+
 
 void IRAM_ATTR updateRotaryEncoder() {
   int MSB = digitalRead(ENCODER_A);

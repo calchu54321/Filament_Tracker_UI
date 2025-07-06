@@ -15,7 +15,8 @@ enum MenuState {
   MODIFY_TAG_MENU,
   MATERIAL_TYPE_MENU,
   COLOR_MENU,
-  SPOOL_WEIGHT_MENU
+  SPOOL_WEIGHT_MENU,
+  RESET_MENU
 };
 
 // Function declarations

@@ -21,6 +21,7 @@ void setLengthLeft(float value);
 void setLengthUsed(float value);
 
 extern volatile long encoderCount;
+extern long pulses;
 
 
 #endif

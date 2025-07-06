@@ -14,6 +14,7 @@ const int MODIFY_SPOOL_WEIGHT_ITEMS = 5;
 const int MODIFY_USAGE_ITEMS = 5;
 const int ADJUST_GRAMS_LEFT_ITEMS = 6;
 const int ADJUST_GRAMS_USED_ITEMS = 6;
+const int RESET_MENU_ITEMS = 2;
 
 enum MenuState currentScreen = HOME;
 int menuIndex = 0;
@@ -235,29 +236,73 @@ void updateMenu() {
         delay(1500);
         menuIndex = 0;
       }
+      else if (menuIndex == 2) { // Import from NFC
+        display.clearDisplay();
+        printCenteredText("Place NFC", 10, 2);
+        printCenteredText("on Reader", 36, 2);
+        display.display();
+        display.setTextSize(1);
+
+        bool tagDetected = false;
+        bool success = false;
+        bool aborted = false;
+        unsigned long startTime = millis();
+        const unsigned long timeout = 10000; // 10 seconds timeout
+
+        //wait for NFC tag or timeout or abort
+        while (millis() - startTime < timeout) {
+          if (isTagPresentCustom()) {
+            tagDetected = true;
+            break;
+            delay(100);
+          }
+          if (isButtonPressed()) {
+            aborted = true;
+            break;
+          }
+          delay (100);
+        }
+        if (tagDetected) {
+          success = readFilamentData(
+            materialType,
+            color,
+            spoolWeight,
+            tagName,
+            spoolWeightValue,
+            filamentAdjustLeftTEMP,
+            pulses
+          );
+        }
+        display.clearDisplay();
+        display.setCursor(0,0);
+        if (tagDetected && success) {
+          printCenteredText("Imported", 10, 2);
+          printCenteredText("From NFC", 36, 2);
+        }
+        else if (aborted) {
+          printCenteredText("Aborted", 10, 2);
+        }
+        else if (!tagDetected) {
+          printCenteredText("Timed Out", 10, 2);
+          display.display();
+          delay(1000);
+          display.clearDisplay();
+          printCenteredText("No Tag", 10, 2);
+          printCenteredText("Found", 36, 2);
+        }
+        display.setTextSize(1);
+        display.display();
+        delay(1500);
+        menuIndex = 0;
+      }
       else if (menuIndex == 3) {  // Modify NFC
         currentScreen = MODIFY_NFC_MENU;
         menuIndex = 0; //Reset submenu Index
       }
-      else if (menuIndex == 4) { //Reset
-        materialType = "PLA"; //remove below 3 later
-        color = "White";
-        spoolWeight = "1kg";
-        encoderCount = 0;
-        spoolWeightValue = 1000; // Default weight in grams; share to rotary encoder
-        filamentAdjustLeftTEMP = spoolWeightValue; // offset - spoolWeightValue
-        updateTagName();
-
-        display.clearDisplay();
-        display.setCursor(10, 24);
-        display.println("RESTORED DEFAULTS");
-        display.display();
-        delay(1500);
-
-        currentScreen = HOME;
+      else if (menuIndex == 4) { // Reset
+        currentScreen = RESET_MENU;
         menuIndex = 0;
       }
-      // Other menu items don't do anything yet
     }
   }
   
@@ -569,6 +614,39 @@ void updateMenu() {
         TagChangeConfirmation();
         currentScreen = SPOOL_WEIGHT_MENU;
         menuIndex = 0;
+      }
+    }
+  }
+    //RESET SUBMENU
+  else if (currentScreen == RESET_MENU) {
+    if (delta != 0) {
+      menuIndex += delta;
+      if (menuIndex < 0) menuIndex = 0;
+      if (menuIndex >= RESET_MENU_ITEMS) menuIndex = RESET_MENU_ITEMS - 1;
+    }
+
+    if (isButtonPressed()) {
+      if (menuIndex == 0) {  // No
+        currentScreen = MAIN_MENU;
+        menuIndex = 0;
+      }
+      else if (menuIndex == 1) { // Yes
+        // materialType = "PLA";
+        // color = "White";
+        // spoolWeight = "1kg";
+        // encoderCount = 0;
+        // spoolWeightValue = 1000; // Default weight in grams; share to rotary encoder
+        // filamentAdjustLeftTEMP = spoolWeightValue; // offset - spoolWeightValue
+        // updateTagName();
+
+        // display.clearDisplay();
+        // printCenteredText("RESTORED DEFAULTS", 24, 1);
+        // display.display();
+        // delay(1500);
+
+        // currentScreen = HOME;
+        // menuIndex = 0;
+        ESP.restart();
       }
     }
   }

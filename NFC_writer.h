@@ -6,8 +6,14 @@
 void initNFC();
 bool writeFilamentData(const String &materialType, const String &color, 
                        const String &spoolWeight, const String &tagName, 
-                       float spoolWeightValue, float filamentUsed, float filamentLeft);
-bool isTagPresent();
+                       float spoolWeightValue, float filamentAdjustLeftTEMP, long pulses);
+
+bool readFilamentData(String &materialType, String &color, 
+                      String &spoolWeight, String &tagName, 
+                      float &spoolWeightValue, float &filamentAdjustLeftTEMP, long &pulses);
+
 bool isTagPresentCustom();
+
+
 
 #endif
