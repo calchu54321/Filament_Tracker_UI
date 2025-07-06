@@ -3,6 +3,7 @@
 #include "rotary_encoder.h"
 #include "encoder.h"
 #include "menu.h"
+#include "NFC_writer.h"
 
 void setup() {
   Serial.begin(115200);
@@ -10,6 +11,7 @@ void setup() {
   initRotaryEncoder();   // Initialize rotary encoder (sets up interrupts)
   initEncoder(); //KY-040 encoder for menu navigation
   initDisplay();   // Initialize OLED display
+  initNFC(); // Initialize NFC Reader/ Writer
 
 }
 

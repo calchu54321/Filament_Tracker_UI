@@ -16,6 +16,8 @@ volatile unsigned long lastButtonPressTime = 0;
 const unsigned long debounceDelay = 200;  // Debounce delay in ms
 
 void IRAM_ATTR handleEncoder() {
+  if (digitalRead(ENCODER_SW) == LOW) return; // Skip if button held
+  
   int clkState = digitalRead(ENCODER_CLK);
   int dtState = digitalRead(ENCODER_DT);
 

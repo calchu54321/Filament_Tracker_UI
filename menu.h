@@ -23,6 +23,7 @@ void updateMenu();
 MenuState getCurrentScreen();
 int getMenuIndex();
 void updateTagName();
+void printCenteredText(String text, int y, int textSize);
 
 extern String tagName;
 extern float spoolWeightValue; //share to rotary_encoder.cpp 

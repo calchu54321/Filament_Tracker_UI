@@ -8,9 +8,9 @@
 
 
 // OLED parameters
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET    -1   // Reset pin not used
+const int SCREEN_WIDTH = 128;
+const int SCREEN_HEIGHT = 64;
+const int OLED_RESET    = -1;   // Reset pin not used
 
 // Create display instance using hardware I2C (SDA=21, SCL=22 by default on ESP32)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -59,7 +59,7 @@ void drawHomeScreen() {
 #define MENU_ITEMS 6
 const char* menuItems[MENU_ITEMS] = {
   "Back to Home",
-  "Store to NFC",
+  "Export to NFC",
   "Import from NFC",
   "Modify NFC",
   "Reset",

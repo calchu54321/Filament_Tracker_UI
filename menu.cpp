@@ -2,6 +2,7 @@
 #include "encoder.h"
 #include "display.h"
 #include "rotary_encoder.h" //get the filamentLeftvalue
+#include "NFC_writer.h"
 #include <Arduino.h>
 
 const int MENU_ITEMS = 5;
@@ -25,7 +26,6 @@ String tagName = "PLA_White_1kg";
 extern float spoolWeightValue = 1000; // Default weight in grams; share to rotary encoder
 extern float filamentAdjustLeftTEMP = spoolWeightValue; // offset - spoolWeightValue
 
-
 //Adjustable Tag Name 
 void updateTagName(){
   tagName = materialType + "_" + color + "_" + spoolWeight;
@@ -35,31 +35,36 @@ void TagChangeConfirmation(){
   // Show confirmation message of material chnage
   display.clearDisplay();
   if (currentScreen == MATERIAL_TYPE_MENU){
-    display.setCursor(0, 0);
-    display.println("Material Changed To:");
-    display.setTextSize(2);
-    display.setCursor(0, 16);
-    display.println(materialType);
+    printCenteredText("Material Changed To:", 0, 1);
+    printCenteredText(materialType, 24, 2);
   }
   else if (currentScreen == COLOR_MENU){
-    display.setCursor(0, 0);
-    display.println("Color Changed To:");
-    display.setTextSize(2);
-    display.setCursor(0, 16);
-    display.println(color);
+    printCenteredText("Color Changed To:", 0, 1);
+    printCenteredText(color, 24, 2);
   }
   else if (currentScreen == SPOOL_WEIGHT_MENU){
-    display.setCursor(0, 0);
-    display.println("Spool Weight Changed To:");
-    display.setTextSize(2);
-    display.setCursor(0, 24);
-    display.println(spoolWeight);
+    printCenteredText("Spool Weight Changed To:", 0, 1);
+    printCenteredText(spoolWeight, 24, 2);
   }
-
   display.display();
   delay(1500);
   display.setTextSize(1);
 }
+
+//Centered Text
+//EX: printCenteredText("Hello World", 24, 2); string, y position, textsize
+void printCenteredText(String text, int y, int textSize = 1) {
+  display.setTextSize(textSize);
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  display.getTextBounds(text, 0, y, &x1, &y1, &w, &h);
+  int x = (SCREEN_WIDTH - w) / 2;  // SCREEN_WIDTH = 128 for most OLEDs
+
+  display.setCursor(x, y);
+  display.println(text);
+}
+
 
 //Selecting Tolerance
 float selectedTolerance = 1.0;  // Holds chosen adjustment step
@@ -171,6 +176,64 @@ void updateMenu() {
     if (isButtonPressed()) {
       if (menuIndex == 0) {  // Back to Home
         currentScreen = HOME;
+      }
+      else if (menuIndex == 1) { // Export to NFC
+        display.clearDisplay();
+        printCenteredText("Place NFC", 10, 2);
+        printCenteredText("on Reader", 36, 2);
+        display.display();
+        display.setTextSize(1);
+
+        bool tagDetected = false;
+        bool success = false;
+        bool aborted = false;
+        unsigned long startTime = millis();
+        const unsigned long timeout = 10000; // 10 seconds timeoue
+
+        // Wait for NFC tag or timeout
+        while (millis() - startTime < timeout) {
+          if(isTagPresentCustom()) {
+            tagDetected = true;
+            break;
+          }
+          if (isButtonPressed()) {
+            aborted = true;
+            break;
+          }
+          delay(10);
+        }
+        if (tagDetected) {
+          success = writeFilamentData(
+          materialType,
+          color,
+          spoolWeight,
+          tagName,
+          spoolWeightValue,
+          getFilamentUsed(),
+          getFilamentLeft()
+          );
+        }
+        display.clearDisplay();
+        display.setCursor(0,0);
+        if (tagDetected && success) {
+          printCenteredText("Exported", 10, 2);
+          printCenteredText("To NFC", 36, 2);
+        }
+        else if (aborted) {
+          printCenteredText("Aborted", 10, 2);
+        }
+        else if (!tagDetected){
+          printCenteredText("Timed Out", 10, 2);
+          display.display();
+          delay(1000);
+          display.clearDisplay();
+          printCenteredText("No Tag", 10, 2);
+          printCenteredText("Found", 36, 2);
+        }
+        display.setTextSize(1);
+        display.display();
+        delay(1500);
+        menuIndex = 0;
       }
       else if (menuIndex == 3) {  // Modify NFC
         currentScreen = MODIFY_NFC_MENU;
