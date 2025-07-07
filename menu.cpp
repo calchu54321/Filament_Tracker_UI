@@ -3,6 +3,7 @@
 #include "display.h"
 #include "rotary_encoder.h" //get the filamentLeftvalue
 #include "NFC_writer.h"
+#include "NFC_reader.h"
 #include <Arduino.h>
 
 const int MENU_ITEMS = 5;
@@ -209,9 +210,7 @@ void updateMenu() {
           color,
           spoolWeight,
           tagName,
-          spoolWeightValue,
-          getFilamentUsed(),
-          getFilamentLeft()
+          spoolWeightValue
           );
         }
         display.clearDisplay();
@@ -236,7 +235,7 @@ void updateMenu() {
         delay(1500);
         menuIndex = 0;
       }
-      else if (menuIndex == 2) { // Import from NFC
+      else if (menuIndex == 2) {  // Import from NFC
         display.clearDisplay();
         printCenteredText("Place NFC", 10, 2);
         printCenteredText("on Reader", 36, 2);
@@ -244,57 +243,85 @@ void updateMenu() {
         display.setTextSize(1);
 
         bool tagDetected = false;
-        bool success = false;
         bool aborted = false;
         unsigned long startTime = millis();
         const unsigned long timeout = 10000; // 10 seconds timeout
 
-        //wait for NFC tag or timeout or abort
+        // Wait for NFC tag, timeout, or abort
         while (millis() - startTime < timeout) {
           if (isTagPresentCustom()) {
             tagDetected = true;
             break;
-            delay(100);
           }
           if (isButtonPressed()) {
             aborted = true;
             break;
           }
-          delay (100);
+          delay(100);
         }
+
+        bool success = false;
+
         if (tagDetected) {
-          success = readFilamentData(
-            materialType,
-            color,
-            spoolWeight,
-            tagName,
-            spoolWeightValue,
-            filamentAdjustLeftTEMP,
-            pulses
-          );
+          initNFC();  // Re-initialize Reader if needed before reading
+
+          unsigned long readStart = millis();
+          const unsigned long readTimeout = 5000; // 5 seconds to fully read tag
+          while (millis() - readStart < readTimeout && !tagData.isComplete()) {
+            display.clearDisplay();
+            printCenteredText("Reading NFC...", 0, 1);
+            display.setCursor(0, 20);
+            display.print("mat: "); display.println(tagData.mat);
+            display.print("col: "); display.println(tagData.col);
+            display.print("spo: "); display.println(tagData.spo);
+            display.print("tag: "); display.println(tagData.tag);
+            display.print("wei: "); display.println(tagData.wei);
+            display.print("lef: "); display.println(tagData.lef);
+            display.display();
+
+            readAndParseNFC();  // Keep reading/updating fields
+            delay(500);
+          }
+
+          if (tagData.isComplete()) {
+            materialType = tagData.mat;
+            color = tagData.col;
+            spoolWeight = tagData.spo;
+            tagName = tagData.tag;
+            spoolWeightValue = tagData.wei;
+            filamentAdjustLeftTEMP = tagData.lef;
+
+            //filamentConsumed i.e. should be 0 by default
+            success = true;
+            tagData.reset();  // Reset after successful import
+          }
         }
+
+        // Final display
         display.clearDisplay();
-        display.setCursor(0,0);
+        display.setCursor(0, 0);
         if (tagDetected && success) {
           printCenteredText("Imported", 10, 2);
           printCenteredText("From NFC", 36, 2);
-        }
-        else if (aborted) {
+        } else if (aborted) {
           printCenteredText("Aborted", 10, 2);
-        }
-        else if (!tagDetected) {
+        } else if (!tagDetected) {
           printCenteredText("Timed Out", 10, 2);
           display.display();
           delay(1000);
           display.clearDisplay();
           printCenteredText("No Tag", 10, 2);
           printCenteredText("Found", 36, 2);
+        } else {
+          printCenteredText("Failed", 10, 2);
         }
+
         display.setTextSize(1);
         display.display();
         delay(1500);
         menuIndex = 0;
       }
+
       else if (menuIndex == 3) {  // Modify NFC
         currentScreen = MODIFY_NFC_MENU;
         menuIndex = 0; //Reset submenu Index

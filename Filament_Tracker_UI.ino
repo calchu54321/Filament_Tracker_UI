@@ -4,6 +4,7 @@
 #include "encoder.h"
 #include "menu.h"
 #include "NFC_writer.h"
+#include "NFC_reader.h"
 
 void setup() {
   Serial.begin(115200);
@@ -31,6 +32,8 @@ void loop() {
   // long count = getPulseCount();
   // Serial.print("Encoder pulse count: ");
   // Serial.println(count);
+
+
 
 
   delay(100);              // Faster update rate for better responsiveness

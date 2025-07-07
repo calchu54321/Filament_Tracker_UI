@@ -6,9 +6,9 @@
 #define ENCODER_A 18
 #define ENCODER_B 19
 
-extern volatile long encoderCount = 0;
+volatile long encoderCount = 0;
 volatile int lastEncoded = 0;
-extern long pulses = 0;
+long pulses = 0;
 
 // Constants
 const float pulsesPerMM = 600.0 / 100.0;    // 600 P/R per 100mm
@@ -76,6 +76,7 @@ float getLengthLeft() {
 float getLengthUsed() {
   return filamentLengthUsedValue;
 }
+
 
 // Setters
 void setFilamentUsed(float value){
