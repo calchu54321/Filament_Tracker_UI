@@ -268,19 +268,12 @@ void updateMenu() {
           unsigned long readStart = millis();
           const unsigned long readTimeout = 5000; // 5 seconds to fully read tag
           while (millis() - readStart < readTimeout && !tagData.isComplete()) {
-            display.clearDisplay();
-            printCenteredText("Reading NFC...", 0, 1);
-            display.setCursor(0, 20);
-            display.print("mat: "); display.println(tagData.mat);
-            display.print("col: "); display.println(tagData.col);
-            display.print("spo: "); display.println(tagData.spo);
-            display.print("tag: "); display.println(tagData.tag);
-            display.print("wei: "); display.println(tagData.wei);
-            display.print("lef: "); display.println(tagData.lef);
-            display.display();
-
-            readAndParseNFC();  // Keep reading/updating fields
-            delay(500);
+              display.clearDisplay();
+              printCenteredText("Reading", 10, 2);
+              printCenteredText(" NFC...", 36, 2);
+              display.display();
+              readAndParseNFC();
+              delay(500);
           }
 
           if (tagData.isComplete()) {
@@ -291,12 +284,30 @@ void updateMenu() {
             spoolWeightValue = tagData.wei;
             filamentAdjustLeftTEMP = tagData.lef;
 
+            display.clearDisplay();
+            printCenteredText("NFC READ",10,2);
+            printCenteredText("COMPLETE", 36, 2);
+            display.display();
+            delay(1000);
+            display.clearDisplay();
+            display.setTextSize(1);
+            int y = 0;
+            int lineHeight = 10;
+
+            display.setCursor(0, y); display.print("mat: "); display.println(materialType); y += lineHeight;
+            display.setCursor(0, y); display.print("col: "); display.println(color); y += lineHeight;
+            display.setCursor(0, y); display.print("spo: "); display.println(spoolWeight); y += lineHeight;
+            display.setCursor(0, y); display.print("tag: "); display.println(tagName); y += lineHeight;
+            display.setCursor(0, y); display.print("wei: "); display.println(spoolWeightValue, 2); y += lineHeight;  // 2 decimals
+            display.setCursor(0, y); display.print("lef: "); display.println(filamentAdjustLeftTEMP, 2);
+
+            display.display();
+            delay(3000);
             //filamentConsumed i.e. should be 0 by default
             success = true;
             tagData.reset();  // Reset after successful import
           }
         }
-
         // Final display
         display.clearDisplay();
         display.setCursor(0, 0);
@@ -313,12 +324,14 @@ void updateMenu() {
           printCenteredText("No Tag", 10, 2);
           printCenteredText("Found", 36, 2);
         } else {
-          printCenteredText("Failed", 10, 2);
+          printCenteredText("Try Scanning", 10, 2); // if scan fails
+          printCenteredText("Again...", 36, 2); // if scan fails 
         }
 
         display.setTextSize(1);
         display.display();
         delay(1500);
+        currentScreen = HOME;
         menuIndex = 0;
       }
 
