@@ -324,8 +324,9 @@ void updateMenu() {
           printCenteredText("No Tag", 10, 2);
           printCenteredText("Found", 36, 2);
         } else {
-          printCenteredText("Try Scanning", 10, 2); // if scan fails
-          printCenteredText("Again...", 36, 2); // if scan fails 
+          printCenteredText("Try", 4, 2); // if scan fails
+          printCenteredText("Scanning",24,2); // if scan fails
+          printCenteredText("Again...", 44, 2); // if scan fails 
         }
 
         display.setTextSize(1);
